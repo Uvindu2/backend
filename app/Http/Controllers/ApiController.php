@@ -13,24 +13,32 @@ class ApiController extends Controller
 
 
 /**
-  * Get User by the token
+  * Get All Users by the token
   * @param Request $request
   * @return User $user
   */
 
- 
   public function index()
   {
       return User ::all();
 
   }
 
+/**
+  * Get Specific User details by the token and user id
+  * @param Request $request
+  * @return User $user
+  */
 
   public function show(User $user)
     {
         return $user;
     }
-
+/**
+  * Get log in user details by the token
+  * @param Request $request
+  * @return User $user
+  */
   public function getUser(Request $request)
   {
     return response()->json(
@@ -69,12 +77,27 @@ class ApiController extends Controller
             'message' => "User registered"
           ],200);
         }
-
+/**
+  * Update User by the token
+  * @param Request $request
+  * @return User $user
+  */
         public function update(Request $request, User $user)
         {
+          $validator = Validator::make($request->all(),[
+            "name" => "required",
+            "email" => "required|email",
+            "password" => "required|min:8"
+          ]);
+          if($validator->fails()){
+            return response()->json([
+              'status' => 400,
+              'message' => "Bad Request"
+            ],400);
+          }
             // return response('data updated');
             $user->update($request->all());
-            return $user;
+            return response($user,200);
         }
 
 
@@ -124,7 +147,7 @@ class ApiController extends Controller
 
 
   /**
-  * Get User by the token
+  * Log out User by the token
   * @param Request $request
   * @return boolen $result
   */
@@ -141,7 +164,7 @@ class ApiController extends Controller
 
 
   /**
-  * Get User by the token
+  * check user by the token
   * @param Request $request
   * @return boolen $result
   */
@@ -160,7 +183,7 @@ class ApiController extends Controller
     ],401);
   }
   /**
-  * Delete user by the token user role admin
+  * Delete user by the token
   * @param Request $request
   * @return User $user with token
   */
